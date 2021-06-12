@@ -37,9 +37,11 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     if (this.cursors.left.isDown) {
       // if the left arrow key is down
       this.setVelocityX(-2); // move left
+      this.flipX = false;
     } else if (this.cursors.right.isDown) {
       // if the right arrow key is down
       this.setVelocityX(2); // move right
+      this.flipX = true;
     }
     const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.space);
 
@@ -51,14 +53,15 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   updateAnimations() {
-    if (Math.abs(this.body.velocity.y) > 0.3) {
+    if (
+      this.isTouchingGround === false ||
+      Math.abs(this.body.velocity.y) > 0.3
+    ) {
       this.play('jump');
     } else if (this.body.velocity.x > 0.5) {
       this.play('walk', true);
-      this.flipX = true;
     } else if (this.body.velocity.x < -0.5) {
       this.play('walk', true);
-      this.flipX = false;
     } else {
       this.play('idle', true);
     }

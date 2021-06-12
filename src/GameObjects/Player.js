@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import {COIN_COLLECTED, events} from '../utils/EventCenter';
+import {COIN_COLLECTED, PLAYER_HIT, events} from '../utils/EventCenter';
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
-  constructor(world, x, y, cursors) {
+  constructor(world, x, y, cursors, obstacles) {
     super(world, x, y, 'characters');
-    this.isTouchingGround = false;
+    this.obstacles = obstacles;
     this.cursors = cursors;
     // Change the physics body size
     this.setRectangle(10, 22);
@@ -28,12 +28,28 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
       frameRate: 8,
       repeat: -1,
     });
-    this.play('idle');
+  }
 
+  init() {
+    this.dead = false;
+    this.health = 3;
+    this.isInvincible = false;
+    this.invincibleTime = 0;
+    this.isTouchingGround = false;
+    this.play('idle');
     this.setOnCollide(data => this.onCollide(data));
   }
 
   update() {
+    if (this.dead) return;
+    // Invicible timer and check
+    if (this.isInvincible) {
+      this.invincibleTime--;
+      if (this.invincibleTime < 0) {
+        this.removeInvincible();
+      }
+    }
+
     if (this.cursors.left.isDown) {
       // if the left arrow key is down
       this.setVelocityX(-2); // move left
@@ -46,7 +62,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.space);
 
     if (jumpJustPressed && this.isTouchingGround) {
-      this.setVelocityY(-10); // jump up
+      this.setVelocityY(-5); // jump up
       this.isTouchingGround = false;
     }
     this.updateAnimations();
@@ -68,9 +84,28 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   onCollide(data) {
+    if (this.dead) return;
     const {bodyA, bodyB} = data;
     const gameObject =
       bodyA.gameObject === this ? bodyB.gameObject : bodyA.gameObject;
+
+    if (!this.isInvincible) {
+      if (
+        this.obstacles.is('Spike', bodyA) ||
+        this.obstacles.is('Spike', bodyB)
+      ) {
+        this.setInvincible();
+        this.health--;
+        events.emit(PLAYER_HIT, {health: this.health});
+        if (this.health === 0) {
+          this.dead = true;
+          this.setRotation((-90 * Math.PI) / 180);
+          this.play('idle');
+        }
+        const xVel = this.flipX === true ? -3 : 3;
+        this.setVelocity(xVel, -7);
+      }
+    }
 
     // If it is Touching a tile
     if (gameObject instanceof Phaser.Physics.Matter.TileBody) {
@@ -84,5 +119,15 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
         gameObject.destroy();
       }
     }
+  }
+
+  setInvincible(time = 50) {
+    this.isInvincible = true;
+    this.invincibleTime = time;
+  }
+
+  removeInvincible() {
+    this.isInvincible = false;
+    this.invincibleTime = 0;
   }
 }

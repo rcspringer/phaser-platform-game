@@ -3,10 +3,16 @@ import baseTiles from '../assets/Tilemap/tiles_packed.png';
 import characters from '../assets/Tilemap/characters_packed.png';
 import tilemap from '../assets/map/smallmap.json';
 import Player from '../GameObjects/Player';
+import ObstaleController from '../utils/ObstacleController';
 
 export default class Game extends Phaser.Scene {
   constructor() {
-    super();
+    super({key: 'game'});
+    this.obstacles;
+  }
+
+  init() {
+    this.obstacles = new ObstaleController();
   }
 
   preload() {
@@ -33,6 +39,7 @@ export default class Game extends Phaser.Scene {
     // add the tileset image we are using
     const tileset = map.addTilesetImage('tiles', 'base_tiles');
     // create the layers we want in the right order
+    const spikesLayer = map.createLayer('Spikes', tileset);
     const backgroundLayer = map.createLayer('Background', tileset);
     // "Ground" layer will be on top of "Background" layer
     const groundLayer = map.createLayer('Ground', tileset);
@@ -72,6 +79,7 @@ export default class Game extends Phaser.Scene {
             x + width * 0.5,
             y,
             this.input.keyboard.createCursorKeys(),
+            this.obstacles,
           );
           this.matter.world.add(this.player);
           this.mainLayer.add(this.player);
@@ -91,7 +99,25 @@ export default class Game extends Phaser.Scene {
           coin.play('coin_turn');
           coin.setData('type', 'coin');
           break;
+        // Creating the coins
+        case 'Spike':
+          const spike = this.matter.add.rectangle(
+            x + width * 0.5,
+            y + height * 0.5,
+            width,
+            height,
+            {
+              isStatic: true,
+            },
+          );
+          this.obstacles.add(name, spike);
+          break;
       }
+    }
+
+    // Initialize the game object of the main layer
+    for (let go of this.mainLayer.getAll()) {
+      go.init();
     }
   }
 

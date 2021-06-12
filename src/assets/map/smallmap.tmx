@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="100" height="40" tilewidth="18" tileheight="18" infinite="0" nextlayerid="4" nextobjectid="2">
+<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="100" height="40" tilewidth="18" tileheight="18" infinite="0" nextlayerid="4" nextobjectid="19">
  <editorsettings>
   <export target="smallmap.json" format="json"/>
  </editorsettings>
@@ -996,5 +996,13 @@
  </layer>
  <objectgroup id="3" name="Objects">
   <object id="1" name="PlayerSpawn" x="72.6667" y="209.333" width="24" height="24"/>
+  <object id="10" name="Coin" gid="152" x="144.667" y="234.333" width="18" height="18"/>
+  <object id="12" name="Coin" gid="152" x="180.333" y="234.667" width="18" height="18"/>
+  <object id="13" name="Coin" gid="152" x="216.667" y="234" width="18" height="18"/>
+  <object id="14" name="Coin" gid="152" x="234" y="216.333" width="18" height="18"/>
+  <object id="15" name="Coin" gid="152" x="252.333" y="198.667" width="18" height="18"/>
+  <object id="16" name="Coin" gid="152" x="289" y="198.667" width="18" height="18"/>
+  <object id="17" name="Coin" gid="152" x="306.667" y="217" width="18" height="18"/>
+  <object id="18" name="Coin" gid="152" x="324.333" y="234.667" width="18" height="18"/>
  </objectgroup>
 </map>

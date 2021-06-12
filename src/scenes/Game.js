@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import baseTiles from '../assets/Tilemap/tiles_packed.png';
 import characters from '../assets/Tilemap/characters_packed.png';
 import tilemap from '../assets/map/smallmap.json';
-import Player from '../Player';
+import Player from '../GameObjects/Player';
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -11,7 +11,10 @@ export default class Game extends Phaser.Scene {
 
   preload() {
     // load the tiles
-    this.load.image('base_tiles', baseTiles);
+    this.load.spritesheet('base_tiles', baseTiles, {
+      frameWidth: 18,
+      frameHeight: 18,
+    });
     this.load.spritesheet('characters', characters, {
       frameWidth: 24,
       frameHeight: 24,
@@ -21,7 +24,8 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    const {width, height} = this.scale;
+    // Loading the ui scene on top
+    this.scene.launch('ui');
 
     // create the Tilemap
     const map = this.make.tilemap({key: 'tilemap'});
@@ -34,8 +38,6 @@ export default class Game extends Phaser.Scene {
     const groundLayer = map.createLayer('Ground', tileset);
     groundLayer.setCollisionByProperty({collides: true});
 
-    const objectsLayer = map.getObjectLayer('Objects');
-
     this.matter.world.convertTilemapLayer(groundLayer);
 
     // Creating a main layer
@@ -46,9 +48,23 @@ export default class Game extends Phaser.Scene {
 
     // set background color, so the sky is not black
     this.cameras.main.setBackgroundColor('#ccccff');
+
+    // Create coin anim
+    this.anims.create({
+      key: 'coin_turn',
+      frames: this.anims.generateFrameNumbers('base_tiles', {
+        frames: [151, 152, 151],
+      }),
+      frameRate: 8,
+      repeat: -1,
+    });
+
+    // Creating and loading the objects
+    const objectsLayer = map.getObjectLayer('Objects');
     for (const objectData of objectsLayer.objects) {
-      const {x = 0, y = 0, name, width = 0} = objectData;
+      const {x = 0, y = 0, name, width = 0, height = 0} = objectData;
       switch (name) {
+        // Spanwing the player
         case 'PlayerSpawn':
           // create the player sprite
           this.player = new Player(
@@ -62,6 +78,18 @@ export default class Game extends Phaser.Scene {
 
           // make the camera follow the player
           this.cameras.main.startFollow(this.player);
+          break;
+        // Creating the coins
+        case 'Coin':
+          const coin = this.matter.add.sprite(
+            x + width * 0.5,
+            y - height * 0.5,
+            'base_tiles',
+            151,
+            {circleRadius: 7, isSensor: true, isStatic: true},
+          );
+          coin.play('coin_turn');
+          coin.setData('type', 'coin');
           break;
       }
     }

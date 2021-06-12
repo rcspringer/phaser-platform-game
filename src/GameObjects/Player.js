@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
+import {COIN_COLLECTED, events} from '../utils/EventCenter';
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
   constructor(world, x, y, cursors) {
     super(world, x, y, 'characters');
+    this.isTouchingGround = false;
     this.cursors = cursors;
+    // Change the physics body size
+    this.setRectangle(10, 22);
+    // Stop the rotation on the body
     this.setFixedRotation();
     this.anims.create({
       key: 'walk',
@@ -37,8 +42,9 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
       this.setVelocityX(2); // move right
     }
     const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+
     if (jumpJustPressed && this.isTouchingGround) {
-      this.setVelocityY(-5); // jump up
+      this.setVelocityY(-10); // jump up
       this.isTouchingGround = false;
     }
     this.updateAnimations();
@@ -59,6 +65,22 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   onCollide(data) {
-    this.isTouchingGround = true;
+    const body = data.bodyB;
+    const gameObject = body.gameObject;
+
+    console.log(gameObject instanceof Phaser.Physics.Matter.TileBody);
+    console.log(typeof gameObject);
+    // If it is Touching a tile
+    if (gameObject instanceof Phaser.Physics.Matter.TileBody) {
+      console.log('Touching TileBody');
+      this.isTouchingGround = true;
+    }
+    if (gameObject) {
+      const type = gameObject.getData('type');
+      if (type === 'coin') {
+        events.emit(COIN_COLLECTED);
+        gameObject.destroy();
+      }
+    }
   }
 }

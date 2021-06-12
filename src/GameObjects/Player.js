@@ -65,15 +65,14 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   onCollide(data) {
-    const body = data.bodyB;
-    const gameObject = body.gameObject;
+    const {bodyA, bodyB} = data;
+    const gameObject =
+      bodyA.gameObject === this ? bodyB.gameObject : bodyA.gameObject;
 
-    console.log(gameObject instanceof Phaser.Physics.Matter.TileBody);
-    console.log(typeof gameObject);
     // If it is Touching a tile
     if (gameObject instanceof Phaser.Physics.Matter.TileBody) {
-      console.log('Touching TileBody');
       this.isTouchingGround = true;
+      return;
     }
     if (gameObject) {
       const type = gameObject.getData('type');

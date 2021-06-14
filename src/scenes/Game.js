@@ -2,10 +2,14 @@ import Phaser from 'phaser';
 import baseTiles from '../assets/Tilemap/tiles_packed.png';
 import characters from '../assets/Tilemap/characters_packed.png';
 import tilemap from '../assets/map/smallmap.json';
-import ObstaleController from '../utils/ObstacleController';
-import Player from '../GameObjects/Player';
 import musicPlatformerBackground from '../assets/Music/retro-forest.mp3';
 import musicForestBackground from '../assets/Music/retro-platformer.mp3';
+import pickupCoin from '../assets/Sounds/pickup_coin.wav';
+import hitSound from '../assets/Sounds/hit_hurt.wav';
+import jumpSound from '../assets/Sounds/jump.wav';
+import ObstaleController from '../utils/ObstacleController';
+import Player from '../GameObjects/Player';
+import Coin from '../GameObjects/Coin';
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -33,6 +37,11 @@ export default class Game extends Phaser.Scene {
     // load music
     this.load.audio('platformer', musicPlatformerBackground);
     this.load.audio('forest', musicForestBackground);
+
+    // load sounds
+    this.load.audio('pickupCoin', pickupCoin);
+    this.load.audio('hitSound', hitSound);
+    this.load.audio('jumpSound', jumpSound);
   }
 
   create() {
@@ -62,16 +71,6 @@ export default class Game extends Phaser.Scene {
     // set background color, so the sky is not black
     this.cameras.main.setBackgroundColor('#ccccff');
 
-    // Create coin anim
-    this.anims.create({
-      key: 'coin_turn',
-      frames: this.anims.generateFrameNumbers('base_tiles', {
-        frames: [151, 152, 151],
-      }),
-      frameRate: 8,
-      repeat: -1,
-    });
-
     // Creating and loading the objects
     const objectsLayer = map.getObjectLayer('Objects');
     for (const objectData of objectsLayer.objects) {
@@ -94,15 +93,8 @@ export default class Game extends Phaser.Scene {
           break;
         // Creating the coins
         case 'Coin':
-          const coin = this.matter.add.sprite(
-            x + width * 0.5,
-            y - height * 0.5,
-            'base_tiles',
-            151,
-            {circleRadius: 7, isSensor: true, isStatic: true},
-          );
-          coin.play('coin_turn');
-          coin.setData('type', 'coin');
+          const coin = this.add.coin(x + width * 0.5, y - height * 0.5);
+          this.matter.world.add(coin);
           break;
         // Creating the coins
         case 'Spike':

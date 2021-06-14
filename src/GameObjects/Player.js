@@ -1,5 +1,10 @@
 import Phaser from 'phaser';
-import {COIN_COLLECTED, PLAYER_HIT, events} from '../utils/EventCenter';
+import {
+  COIN_COLLECTED,
+  PLAYER_HIT,
+  PLAYER_JUMP,
+  events,
+} from '../utils/EventCenter';
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
   constructor(world, x, y, cursors, obstacles) {
@@ -71,6 +76,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     if (jumpJustPressed && this.isTouchingGround) {
       this.setVelocityY(-5); // jump up
       this.isTouchingGround = false;
+      events.emit(PLAYER_JUMP);
     }
     this.updateAnimations();
   }

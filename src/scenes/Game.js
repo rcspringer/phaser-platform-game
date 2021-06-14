@@ -2,8 +2,10 @@ import Phaser from 'phaser';
 import baseTiles from '../assets/Tilemap/tiles_packed.png';
 import characters from '../assets/Tilemap/characters_packed.png';
 import tilemap from '../assets/map/smallmap.json';
-import Player from '../GameObjects/Player';
 import ObstaleController from '../utils/ObstacleController';
+import Player from '../GameObjects/Player';
+import musicPlatformerBackground from '../assets/Music/retro-forest.mp3';
+import musicForestBackground from '../assets/Music/retro-platformer.mp3';
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -27,6 +29,10 @@ export default class Game extends Phaser.Scene {
     });
     // load the tilemap JSON file
     this.load.tilemapTiledJSON('tilemap', tilemap);
+
+    // load music
+    this.load.audio('platformer', musicPlatformerBackground);
+    this.load.audio('forest', musicForestBackground);
   }
 
   create() {
@@ -73,9 +79,8 @@ export default class Game extends Phaser.Scene {
       switch (name) {
         // Spanwing the player
         case 'PlayerSpawn':
-          // create the player sprite
-          this.player = new Player(
-            this.matter.world,
+          // create the player sprite using the GameFactory Pattern
+          this.player = this.add.player(
             x + width * 0.5,
             y,
             this.input.keyboard.createCursorKeys(),
@@ -119,11 +124,25 @@ export default class Game extends Phaser.Scene {
     for (let go of this.mainLayer.getAll()) {
       go.init();
     }
+
+    // Loading the music
+    this.music = this.sound.add('platformer', {
+      volume: 0.5,
+      loop: true,
+    });
+
+    if (!this.sound.locked) {
+      // already unlocked so play
+      this.music.play();
+    } else {
+      // wait for 'unlocked' to fire and then play
+      this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+        this.music.play();
+      });
+    }
   }
 
   update(t, dt) {
-    for (let go of this.mainLayer.getAll()) {
-      go.update();
-    }
+    super.update(t, dt);
   }
 }

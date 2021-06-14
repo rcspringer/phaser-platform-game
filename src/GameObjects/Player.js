@@ -31,6 +31,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   init() {
+    console.log('Inited');
     this.dead = false;
     this.health = 3;
     this.isInvincible = false;
@@ -38,6 +39,12 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.isTouchingGround = false;
     this.play('idle');
     this.setOnCollide(data => this.onCollide(data));
+  }
+
+  // This is the update function called when and object is in the updateList
+  preUpdate(time, deltaTime) {
+    super.preUpdate(time, deltaTime);
+    this.update(time, deltaTime);
   }
 
   update() {
@@ -131,3 +138,22 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.invincibleTime = 0;
   }
 }
+
+// at the bottom of the player.js file
+Phaser.GameObjects.GameObjectFactory.register(
+  'player',
+  function (x, y, cursors, obstacles) {
+    const player = new Player(
+      this.scene.matter.world,
+      x,
+      y,
+      cursors,
+      obstacles,
+    );
+
+    this.displayList.add(player);
+    this.updateList.add(player);
+
+    return player;
+  },
+);

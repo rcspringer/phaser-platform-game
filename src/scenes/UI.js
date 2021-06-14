@@ -46,7 +46,7 @@ export default class UI extends Phaser.Scene {
     events.on(PLAYER_JUMP, this.handlePlayerJump, this);
 
     // Removing the event COIN_COLLECTED when this scene is destroyed
-    this.events.once(Phaser.Scenes.DESTROYED, () => {
+    this.events.once('destroy', () => {
       events.off(COIN_COLLECTED, this.handleCoinCollected, this);
       events.off(PLAYER_HIT, this.handlePlayerHit, this);
       events.off(PLAYER_JUMP, this.handlePlayerJump, this);

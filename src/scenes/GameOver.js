@@ -13,9 +13,8 @@ export default class GameOver extends Phaser.Scene {
     });
     this.input.keyboard.on('keyup', this.resetGame, this);
     // Removing the event COIN_COLLECTED when this scene is destroyed
-    this.events.on('destroy', () => {
+    this.events.once('destroy', () => {
       this.input.keyboard.off('keyup', this.resetGame, this);
-      console.log('GameOver destroyed');
       // Relaunch the game
       this.scene.restart('game');
     });

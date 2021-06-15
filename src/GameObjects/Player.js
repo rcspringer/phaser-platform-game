@@ -11,8 +11,17 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     super(world, x, y, 'characters');
     this.obstacles = obstacles;
     this.cursors = cursors;
+    this.speed = 2;
+    this.jumpHeight = 5;
+    this.hitColor = Phaser.Display.Color.GetColor(255, 0, 0);
     // Change the physics body size
-    this.setRectangle(10, 22);
+    this.setRectangle(10, 22, {
+      friction: 0,
+      frictionAir: 0.01,
+      frictionStatic: 0,
+    });
+
+    // this.setFriction(1, 1, 0);
     // Stop the rotation on the body
     this.setFixedRotation();
     this.anims.create({
@@ -57,24 +66,30 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     // Invicible timer and check
     if (this.isInvincible) {
       this.invincibleTime--;
+      if (this.invincibleTime % 5 === 0) {
+        this.clearTint();
+      } else {
+        this.setTint(this.hitColor);
+      }
       if (this.invincibleTime < 0) {
         this.removeInvincible();
+        this.clearTint();
       }
     }
 
     if (this.cursors.left.isDown) {
       // if the left arrow key is down
-      this.setVelocityX(-2); // move left
+      this.setVelocityX(-this.speed); // move left
       this.flipX = false;
     } else if (this.cursors.right.isDown) {
       // if the right arrow key is down
-      this.setVelocityX(2); // move right
+      this.setVelocityX(this.speed); // move right
       this.flipX = true;
     }
     const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.space);
 
     if (jumpJustPressed && this.isTouchingGround) {
-      this.setVelocityY(-5); // jump up
+      this.setVelocityY(-this.jumpHeight); // jump up
       this.isTouchingGround = false;
       events.emit(PLAYER_JUMP);
     }

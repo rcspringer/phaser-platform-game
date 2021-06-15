@@ -9,6 +9,7 @@ export default class Coin extends Phaser.Physics.Matter.Sprite {
     // Stop the rotation on the body
     this.setFixedRotation();
     this.setStatic(true);
+    this.setSensor(true);
 
     // Create coin anim
     this.anims.create({

@@ -64,6 +64,7 @@ export default class UI extends Phaser.Scene {
     }
     this.healthText.text = `Health: ${event.health}`;
     this.hitSound.play();
+    this.cameras.main.shake(300, 0.01);
   }
 
   handlePlayerJump() {

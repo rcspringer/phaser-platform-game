@@ -10,6 +10,7 @@ import jumpSound from '../assets/Sounds/jump.wav';
 import ObstaleController from '../utils/ObstacleController';
 import Player from '../GameObjects/Player';
 import Coin from '../GameObjects/Coin';
+import {PLAYER_HIT, events} from '../utils/EventCenter';
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -58,7 +59,7 @@ export default class Game extends Phaser.Scene {
     const backgroundLayer = map.createLayer('Background', tileset);
     // "Ground" layer will be on top of "Background" layer
     const groundLayer = map.createLayer('Ground', tileset);
-    groundLayer.setCollisionByProperty({collides: true});
+    groundLayer.setCollisionByProperty({collides: true}, undefined, true);
 
     this.matter.world.convertTilemapLayer(groundLayer);
 
@@ -132,9 +133,23 @@ export default class Game extends Phaser.Scene {
         this.music.play();
       });
     }
+
+    events.on(PLAYER_HIT, this.handlePlayerHit, this);
+
+    // Removing the event COIN_COLLECTED when this scene is destroyed
+    this.events.once('destroy', () => {
+      events.off(PLAYER_HIT, this.handlePlayerHit, this);
+    });
   }
 
   update(t, dt) {
     super.update(t, dt);
+  }
+
+  handlePlayerHit(event) {
+    this.cameras.main.shake(300, 0.01);
+    if (event.health <= 0) {
+      this.cameras.main.zoomTo(6, 7000);
+    }
   }
 }

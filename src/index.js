@@ -9,6 +9,7 @@ const config = {
   width: 500,
   height: 300,
   zoom: 2,
+  pixelArt: true,
   disableContextMenu: true,
   physics: {
     default: 'matter',

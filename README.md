@@ -1,4 +1,7 @@
-# Phaser 3 Webpack Project Template
+# Phaser 3 Game
+This game is made with the JavaScript/TypeScript game engine Phaser 3. To start the project see the Available Commands.
+
+## Based of Phaser 3 Template
 
 A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Webpack 5](https://webpack.js.org/) that includes hot-reloading for development and production-ready builds.
 

@@ -11,7 +11,7 @@ import jumpSound from '../assets/Sounds/jump.wav';
 
 export default class UI extends Phaser.Scene {
     constructor() {
-        super({ key: 'ui' });
+        super('ui');
         this.coins = 0;
     }
 

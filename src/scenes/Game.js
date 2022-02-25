@@ -13,7 +13,7 @@ import { PLAYER_HIT, events } from '../utils/EventCenter';
 
 export default class Game extends Phaser.Scene {
     constructor() {
-        super({ key: 'game' });
+        super('game');
         this.obstacles;
     }
 

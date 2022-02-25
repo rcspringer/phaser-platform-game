@@ -5,6 +5,9 @@ import {
     PLAYER_JUMP,
     events,
 } from '../utils/EventCenter';
+import pickupCoin from '../assets/Sounds/pickup_coin.wav';
+import hitSound from '../assets/Sounds/hit_hurt.wav';
+import jumpSound from '../assets/Sounds/jump.wav';
 
 export default class UI extends Phaser.Scene {
     constructor() {
@@ -15,6 +18,13 @@ export default class UI extends Phaser.Scene {
     init() {
         // Make sure that the coins are back to 0 when restarting the game.
         this.coins = 0;
+    }
+
+    preload() {
+        // load sounds
+        this.load.audio('pickupCoin', pickupCoin);
+        this.load.audio('hitSound', hitSound);
+        this.load.audio('jumpSound', jumpSound);
     }
 
     create() {

@@ -4,12 +4,11 @@ import characters from '../assets/Tilemap/characters_packed.png';
 import tilemap from '../assets/map/smallmap.json';
 import musicPlatformerBackground from '../assets/Music/retro-forest.mp3';
 import musicForestBackground from '../assets/Music/retro-platformer.mp3';
-import pickupCoin from '../assets/Sounds/pickup_coin.wav';
-import hitSound from '../assets/Sounds/hit_hurt.wav';
-import jumpSound from '../assets/Sounds/jump.wav';
 import ObstaleController from '../utils/ObstacleController';
+
 import Player from '../GameObjects/Player';
 import Coin from '../GameObjects/Coin';
+
 import { PLAYER_HIT, events } from '../utils/EventCenter';
 
 export default class Game extends Phaser.Scene {
@@ -38,11 +37,6 @@ export default class Game extends Phaser.Scene {
         // load music
         this.load.audio('platformer', musicPlatformerBackground);
         this.load.audio('forest', musicForestBackground);
-
-        // load sounds
-        this.load.audio('pickupCoin', pickupCoin);
-        this.load.audio('hitSound', hitSound);
-        this.load.audio('jumpSound', jumpSound);
     }
 
     create() {
@@ -60,6 +54,11 @@ export default class Game extends Phaser.Scene {
         // "Ground" layer will be on top of "Background" layer
         const groundLayer = map.createLayer('Ground', tileset);
         groundLayer.setCollisionByProperty({ collides: true }, undefined, true);
+        groundLayer.setCollisionByProperty(
+            { types: ['spike', 'water'] },
+            undefined,
+            true
+        );
 
         this.matter.world.convertTilemapLayer(groundLayer);
 
@@ -91,6 +90,7 @@ export default class Game extends Phaser.Scene {
                         this.input.keyboard.createCursorKeys(),
                         this.obstacles
                     );
+
                     this.matter.world.add(this.player);
                     this.mainLayer.add(this.player);
 
